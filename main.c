@@ -11,9 +11,11 @@ enum target_platforms {
 };
 
 typedef struct {
-    char *input;
-    char *output;
+    char *sinput;
+    char *soutput;
     int target;
+    FILE *input;
+    FILE *output;
 } compiler;
 
 int get_target(char *starget)
@@ -39,7 +41,7 @@ int parse_args(int argc, char *argv[], compiler *comp)
         switch (current_flag)
         {
         case 'o':
-            comp->output = argv[optind++];
+            comp->soutput = argv[optind++];
             break;
         case 't':
             comp->target = get_target(argv[optind++]);
@@ -55,18 +57,25 @@ int parse_args(int argc, char *argv[], compiler *comp)
             return -1;
         }
     }
-    comp->input = argv[optind];
+    comp->sinput = argv[optind];
     return 69;
 }
 
 int main(int argc, char *argv[])
 {
     compiler comp = {0};
-    comp.output = "a.out";
+    comp.soutput = "a.out";
     comp.target = C;
     if (parse_args(argc, argv, &comp) != 69) return 69;
-    printf("Input file : %s\n", comp.input);
-    printf("Output file : %s\n", comp.output);
-    printf("Target : %d\n", comp.target);
+    comp.input = fopen(comp.sinput, "r");
+    comp.output = fopen(comp.soutput, "w");
+    if (comp.input == NULL || comp.output == NULL)
+    {
+        perror("Error");
+        fclose(comp.input);
+        fclose(comp.output);
+        return 69;
+    }
+    fclose(comp.input);
     return 0;
 }
