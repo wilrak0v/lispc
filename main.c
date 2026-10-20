@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include "lexer.h"
 // TODO: make it compatible with Windows
 
 enum target_platforms {
@@ -61,6 +62,31 @@ int parse_args(int argc, char *argv[], compiler *comp)
     return 69;
 }
 
+void
+emit(compiler *comp)
+{
+    token_t tok = get_next_token(comp->input);
+    while (1) {
+        printf("-----\n");
+        switch (tok.type) {
+        case EOF_TOKEN:
+            return;
+        case NUMBER:
+            printf("EMIT: number '%d'\n", tok.number);
+            break;
+        case STRING:
+            printf("EMIT: string '%s'\n", tok.string.string);
+            break;
+        case IDENTIFIER:
+            printf("EMIT: identifier '%s'\n", tok.identifier);
+            break;
+        default:
+            break;
+        }
+        tok = get_next_token(comp->input);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     compiler comp = {0};
@@ -76,6 +102,7 @@ int main(int argc, char *argv[])
         fclose(comp.output);
         return 69;
     }
+    emit(&comp);
     fclose(comp.input);
     return 0;
 }
