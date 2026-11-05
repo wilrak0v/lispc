@@ -1,4 +1,6 @@
-(defn (
-    (print "hello world")
-    (print "Result is " (+ 5 4))
-))
+(defn int main ()
+     (var str x "test")
+     (print x)
+     (print "\n")
+     (return 0)
+)

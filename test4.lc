@@ -1,0 +1,10 @@
+(struct vec2
+    (var i8 x)
+    (var i8 y)
+)
+
+(defn int main ()
+    (var vec2 pos (10 10))
+    (vec! test (10 10 10 10)) => python: test = [10, 10, 10, 10]
+    (return 0)
+)

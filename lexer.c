@@ -6,26 +6,29 @@
 token_t
 get_identifier(FILE *fp, char based_char)
 {
-    char c = '\0';
-    int index = 1;
+    int index = 0;
     char id_string[64];
-    id_string[0] = based_char;
-    token_t result = (token_t) {
+    id_string[index++] = based_char;
+    token_t result = {
         .type = IDENTIFIER,
-        .identifier = "",
     };
-    while (c != ' ' && c != EOF) {
-        if (index > 63) {
+
+    int c = fgetc(fp);
+    while (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != ')' && c != EOF) {
+        if (index > 62) {
             // TODO: print a better error message
             printf("Error: identifier too long\n");
             exit(69);
         }
+        id_string[index++] = c;
         c = fgetc(fp);
-        id_string[index] = c;
-        ++index;
     }
+    if (c != EOF) {
+        ungetc(c, fp);
+    }
+    id_string[index] = '\0';
     strncpy(result.identifier, id_string, 64);
-    result.identifier[index - 1] = '\0';
+    
     return result;
 }
 
@@ -68,6 +71,10 @@ get_number(FILE *fp, char current_char)
         number_buffer[index] = number_char;
         ++index;
     }
+    if (number_char != EOF_TOKEN) {
+        ungetc(number_char, fp);
+    }
+    number_buffer[index] = '\0';
 
     int number = atoi(number_buffer);
     return (token_t) {

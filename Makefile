@@ -1,4 +1,4 @@
 all: main
 
-main: main.c lexer.c
-	gcc -o main main.c lexer.c -Wextra -Wall
+main: main.c lexer.c parser.c
+	gcc -o main main.c lexer.c parser.c -Wextra -Wall

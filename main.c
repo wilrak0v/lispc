@@ -1,23 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "lispc.h"
 #include "lexer.h"
+#include "parser.h"
 // TODO: make it compatible with Windows
-
-enum target_platforms {
-    ARM32,
-    ARM64,
-    X86_64,
-    C
-};
-
-typedef struct {
-    char *sinput;
-    char *soutput;
-    int target;
-    FILE *input;
-    FILE *output;
-} compiler;
+// TODO: make it target platform dependent
+// TODO: follow the lines number for the errors
+// TODO: show better errors by making functions for it
+// TODO: check the language because now it's not secure
 
 int get_target(char *starget)
 {
@@ -62,31 +54,6 @@ int parse_args(int argc, char *argv[], compiler *comp)
     return 69;
 }
 
-void
-emit(compiler *comp)
-{
-    token_t tok = get_next_token(comp->input);
-    while (1) {
-        printf("-----\n");
-        switch (tok.type) {
-        case EOF_TOKEN:
-            return;
-        case NUMBER:
-            printf("EMIT: number '%d'\n", tok.number);
-            break;
-        case STRING:
-            printf("EMIT: string '%s'\n", tok.string.string);
-            break;
-        case IDENTIFIER:
-            printf("EMIT: identifier '%s'\n", tok.identifier);
-            break;
-        default:
-            break;
-        }
-        tok = get_next_token(comp->input);
-    }
-}
-
 int main(int argc, char *argv[])
 {
     compiler comp = {0};
@@ -102,7 +69,12 @@ int main(int argc, char *argv[])
         fclose(comp.output);
         return 69;
     }
-    emit(&comp);
+    emit_start(&comp);
+    advance(&comp);
+    while (current_token.type != EOF_TOKEN) {
+        parse_expression(&comp);
+        printf("\n");
+    }
     fclose(comp.input);
     return 0;
 }

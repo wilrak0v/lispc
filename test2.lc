@@ -1,0 +1,5 @@
+(defn char main ()
+    (var char* x "Hi")
+    (print x)
+    (return 0)
+)
